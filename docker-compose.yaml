@@ -1,0 +1,34 @@
+version: '3.9'
+
+networks:
+  todo-network: {}
+
+services:
+  todo-database:
+    container_name: todo-database
+    image: postgres:14
+    networks:
+      - todo-network
+    ports:
+      - '5432:5432'
+    volumes:
+    - ./docker/database/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_PASSWORD: postgres
+
+  todo-api:
+    container_name: todo-api
+    image: postgrest/postgrest:v9.0.0
+    depends_on:
+      - todo-database
+    networks:
+      - todo-network
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./docker/api/postgrest.conf:/etc/postgrest.conf
+    environment:
+      PGRST_DB_URI: postgres://authenticator:postgres@todo-database:5432/postgres
+      PGRST_DB_SCHEMA: todo_api
+      PGRST_DB_ANON_ROLE: anonymous
+      PGRST_JWT_SECRET: abcdefghijklmnopqrstuvwxy0123456789
