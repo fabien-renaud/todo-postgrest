@@ -32,3 +32,15 @@ services:
       PGRST_DB_SCHEMA: todo_api
       PGRST_DB_ANON_ROLE: anonymous
       PGRST_JWT_SECRET: abcdefghijklmnopqrstuvwxy0123456789
+
+  todo-api-ui:
+    container_name: todo-api-ui
+    image: swaggerapi/swagger-ui:v4.5.2
+    depends_on:
+      - todo-api
+    networks:
+      - todo-network
+    ports:
+      - '3080:8080'
+    environment:
+      SWAGGER_JSON_URL: http://localhost:3000
